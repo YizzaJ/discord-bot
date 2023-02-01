@@ -1,17 +1,12 @@
 package es.upm.bot.discordbot.bot;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
+import discord4j.core.spec.EmbedCreateSpec;
 import es.upm.bot.discordbot.handler.CommandHandler;
 import reactor.core.publisher.Mono;
 
@@ -33,12 +28,16 @@ public class Bot {
 			  // MessageCreateEvent example
 			  Mono<Void> handlePingCommand = gateway.on(MessageCreateEvent.class, event -> {
 			    Message message = event.getMessage();
-
 			    if (message.getContent().equalsIgnoreCase("!news")) {
 			    	String response = new CommandHandler(new String[]{"news",""}).getCommandResponse();
 			      return message.getChannel()
 			          .flatMap(channel -> channel.createMessage(response));
 			    }
+			    else if (message.getContent().equalsIgnoreCase("a")) {
+			    	EmbedCreateSpec response = new CommandHandler(new String[]{"a",""}).getCommandResponseEmbed();
+				      return message.getChannel()
+				          .flatMap(channel -> channel.createMessage(response));
+				    }
 
 			    return Mono.empty();
 			  }).then();
