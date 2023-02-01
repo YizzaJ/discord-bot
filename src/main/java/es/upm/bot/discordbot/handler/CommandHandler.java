@@ -7,10 +7,13 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Instant;
+import java.util.ArrayList;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.json.JsonValue;
 
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.util.Color;
@@ -19,6 +22,7 @@ import es.upm.bot.discordbot.elements.Article;
 public class CommandHandler {
 
 	private static final String newsEndpoint = "http://localhost:9999/";
+	private ArrayList<EmbedCreateSpec> commandResponseEmbedList;
 	private String commandResponse;
 	private EmbedCreateSpec commandResponseEmbed;
 
@@ -57,6 +61,18 @@ public class CommandHandler {
 			}
 			commandResponseEmbed = toEmbed(response.body());
 		}
+		
+		case "b":{  
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(newsEndpoint + "newslist")).build();
+			HttpResponse<String> response = null;
+			try {
+				response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+			} catch (IOException | InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			commandResponseEmbedList = toEmbedList(response.body());
+		}
 
 
 		}
@@ -70,6 +86,34 @@ public class CommandHandler {
 		Article article = new Article(obj.getString("title"), obj.getString("image"), 
 				obj.getString("content"), obj.getString("authors"), obj.getString("link"));		
 		return article;
+	}
+	
+	private ArrayList<EmbedCreateSpec> toEmbedList(String body) {
+		ArrayList<EmbedCreateSpec> embedList = new ArrayList<>();
+		StringReader sr = new StringReader(body);
+        JsonReader reader = Json.createReader(sr);
+		
+		JsonArray array = reader.readArray();
+		
+		for(JsonValue jo : array) {
+			JsonObject obj = jo.asJsonObject();
+			Article article = new Article(obj.getString("title"), obj.getString("image"), 
+					obj.getString("content"), obj.getString("authors"), obj.getString("link"));	
+			System.err.println(article.toString());
+			EmbedCreateSpec embed = EmbedCreateSpec.builder()
+				    .color(Color.BLUE)
+				    .title(obj.getString("title"))
+				    .url(obj.getString("link"))
+				    .author(obj.getString("authors"), null, null)
+				    .image(obj.getString("image"))
+				    .description(obj.getString("content"))
+				    .timestamp(Instant.now())
+				    .footer("NotiBot", obj.getString("favicon"))
+				    .build();	
+			embedList.add(embed);
+		}
+		
+		return embedList;
 	}
 	
 	private EmbedCreateSpec toEmbed(String body) {
@@ -95,6 +139,10 @@ public class CommandHandler {
 
 	public EmbedCreateSpec getCommandResponseEmbed() {
 		return commandResponseEmbed;
+	}
+	
+	public ArrayList<EmbedCreateSpec> getCommandResponseEmbedList() {
+		return commandResponseEmbedList;
 	}
 	
 
