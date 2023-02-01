@@ -81,10 +81,10 @@ public class CommandHandler {
 			    .title(obj.getString("title"))
 			    .url(obj.getString("link"))
 			    .author(obj.getString("authors"), null, null)
+			    .image(obj.getString("image"))
 			    .description(obj.getString("content"))
-			    .image("https://i.imgur.com/F9BhEoz.png")
 			    .timestamp(Instant.now())
-			    .footer("footer", "https://i.imgur.com/F9BhEoz.png")
+			    .footer("NotiBot", obj.getString("favicon"))
 			    .build();	
 		return embed;
 	}
