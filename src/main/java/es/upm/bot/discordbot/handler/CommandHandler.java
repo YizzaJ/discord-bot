@@ -5,6 +5,8 @@ import java.io.StringReader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublisher;
+import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -30,9 +32,9 @@ public class CommandHandler {
 
 		HttpClient httpClient = HttpClient.newHttpClient();	 
 		String command = message[0];
-		String content = message[0];
+		String content = message[1];
 
-	
+
 		switch(command) {
 		case "news":{  
 			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(newsEndpoint + "news")).build();
@@ -50,7 +52,7 @@ public class CommandHandler {
 			body = body.substring(0,(body.length() >= 500 ? 500 : body.length()));
 			commandResponse = body;
 		}
-		case "a":{  
+		case "new":{  
 			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(newsEndpoint + "news")).build();
 			HttpResponse<String> response = null;
 			try {
@@ -61,8 +63,8 @@ public class CommandHandler {
 			}
 			commandResponseEmbed = toEmbed(response.body());
 		}
-		
-		case "b":{  
+
+		case "!news":{  
 			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(newsEndpoint + "newslist")).build();
 			HttpResponse<String> response = null;
 			try {
@@ -74,62 +76,75 @@ public class CommandHandler {
 			commandResponseEmbedList = toEmbedList(response.body());
 		}
 
+		case "!menu":{  
+			System.out.println(content);
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(newsEndpoint + "change")).
+					POST(BodyPublishers.ofString(content)).build();
+			HttpResponse<String> response = null;
+			try {
+				response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+			} catch (IOException | InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 
 		}
 
 	}
-	
+
 	private Article toArticle(String body) {
 		StringReader sr = new StringReader(body);
-        JsonReader reader = Json.createReader(sr);
+		JsonReader reader = Json.createReader(sr);
 		JsonObject obj = reader.readObject();
 		Article article = new Article(obj.getString("title"), obj.getString("image"), 
 				obj.getString("content"), obj.getString("authors"), obj.getString("link"));		
 		return article;
 	}
-	
+
 	private ArrayList<EmbedCreateSpec> toEmbedList(String body) {
 		ArrayList<EmbedCreateSpec> embedList = new ArrayList<>();
 		StringReader sr = new StringReader(body);
-        JsonReader reader = Json.createReader(sr);
-		
+		JsonReader reader = Json.createReader(sr);
+
 		JsonArray array = reader.readArray();
-		
+
 		for(JsonValue jo : array) {
 			JsonObject obj = jo.asJsonObject();
 			Article article = new Article(obj.getString("title"), obj.getString("image"), 
 					obj.getString("content"), obj.getString("authors"), obj.getString("link"));	
 			System.err.println(article.toString());
 			EmbedCreateSpec embed = EmbedCreateSpec.builder()
-				    .color(Color.BLUE)
-				    .title(obj.getString("title"))
-				    .url(obj.getString("link"))
-				    .author(obj.getString("authors"), null, null)
-				    .image(obj.getString("image"))
-				    .description(obj.getString("content"))
-				    .timestamp(Instant.now())
-				    .footer("NotiBot", obj.getString("favicon"))
-				    .build();	
+					.color(Color.BLUE)
+					.title(obj.getString("title"))
+					.url(obj.getString("link"))
+					.author(obj.getString("authors"), null, null)
+					.image(obj.getString("image"))
+					.description(obj.getString("content"))
+					.timestamp(Instant.now())
+					.footer("NotiBot", obj.getString("favicon"))
+					.build();	
 			embedList.add(embed);
 		}
-		
+
 		return embedList;
 	}
-	
+
 	private EmbedCreateSpec toEmbed(String body) {
 		StringReader sr = new StringReader(body);
-        JsonReader reader = Json.createReader(sr);
+		JsonReader reader = Json.createReader(sr);
 		JsonObject obj = reader.readObject();
 		EmbedCreateSpec embed = EmbedCreateSpec.builder()
-			    .color(Color.BLUE)
-			    .title(obj.getString("title"))
-			    .url(obj.getString("link"))
-			    .author(obj.getString("authors"), null, null)
-			    .image(obj.getString("image"))
-			    .description(obj.getString("content"))
-			    .timestamp(Instant.now())
-			    .footer("NotiBot", obj.getString("favicon"))
-			    .build();	
+				.color(Color.BLUE)
+				.title(obj.getString("title"))
+				.url(obj.getString("link"))
+				.author(obj.getString("authors"), null, null)
+				.image(obj.getString("image"))
+				.description(obj.getString("content"))
+				.timestamp(Instant.now())
+				.footer("NotiBot", obj.getString("favicon"))
+				.build();	
 		return embed;
 	}
 
@@ -140,10 +155,10 @@ public class CommandHandler {
 	public EmbedCreateSpec getCommandResponseEmbed() {
 		return commandResponseEmbed;
 	}
-	
+
 	public ArrayList<EmbedCreateSpec> getCommandResponseEmbedList() {
 		return commandResponseEmbedList;
 	}
-	
+
 
 }
