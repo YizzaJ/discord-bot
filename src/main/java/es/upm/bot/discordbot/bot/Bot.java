@@ -22,10 +22,10 @@ public class Bot {
 		DiscordClient client = DiscordClient.create("MTA1OTgyNDAwNTk1MzA5NzczOA.GUL_xT.eqwfcC42PhzrB1KDyf9cNGzT3FWp1EtVeTSqGg");
 
 		SelectMenu select = SelectMenu.of("123445",
-				SelectMenu.Option.of("El mundo", "mundo"),
-				SelectMenu.Option.of("Antena 3", "antena"),
-				SelectMenu.Option.of("El pais", "pais"),
-				SelectMenu.Option.of("El universal", "universal")
+				SelectMenu.Option.of("El mundo", "https://www.elmundo.es/"),
+				SelectMenu.Option.of("Antena 3", "https://www.antena3.com/noticias/"),
+				SelectMenu.Option.of("El pais", "https://elpais.com/"),
+				SelectMenu.Option.of("El universal", "https://www.eluniversal.com/")
 				).withMaxValues(1).withMinValues(1);
 
 
@@ -38,7 +38,7 @@ public class Bot {
 					return message.getChannel()
 							.flatMap(channel -> channel.createMessage(response));
 				}
-				else if (message.getContent().equalsIgnoreCase("a")) {
+				else if (message.getContent().equalsIgnoreCase("aaaa")) {
 					EmbedCreateSpec response = new CommandHandler(new String[]{"new",""}).getCommandResponseEmbed();
 					return message.getChannel()
 							.flatMap(channel -> channel.createMessage(response));
@@ -53,7 +53,7 @@ public class Bot {
 					}
 					return result;  	  
 				}
-				else if (message.getContent().equalsIgnoreCase("menu")) {
+				else if (message.getContent().equalsIgnoreCase("menu") || message.getContent().equalsIgnoreCase("b")) {
 					return message.getChannel()
 							.flatMap(channel -> channel.createMessage(
 									MessageCreateSpec.builder()
@@ -66,7 +66,7 @@ public class Bot {
 
 			Mono<Void> changeProvider = gateway.on(SelectMenuInteractionEvent .class, event -> {
 				String provider = event.getValues().toString();
-				new CommandHandler(new String[]{"!news",provider}).getCommandResponse();
+				new CommandHandler(new String[]{"!menu",provider}).getCommandResponse();
 				select.disabled();
 				return event.reply("Proveedor de noticias cambiado.");
 			}).then();

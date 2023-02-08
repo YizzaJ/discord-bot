@@ -77,7 +77,6 @@ public class CommandHandler {
 		}
 
 		case "!menu":{  
-			System.out.println(content);
 			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(newsEndpoint + "change")).
 					POST(BodyPublishers.ofString(content)).build();
 			HttpResponse<String> response = null;
