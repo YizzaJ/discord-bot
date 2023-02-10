@@ -20,11 +20,13 @@ import javax.json.JsonValue;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.util.Color;
 import es.upm.bot.discordbot.elements.Article;
+import es.upm.bot.discordbot.elements.Topic;
 
 public class CommandHandler {
 
 	private static final String newsEndpoint = "http://localhost:9999/";
 	private ArrayList<EmbedCreateSpec> commandResponseEmbedList;
+	private ArrayList<Topic> topicList;
 	private String commandResponse;
 	private EmbedCreateSpec commandResponseEmbed;
 
@@ -51,6 +53,8 @@ public class CommandHandler {
 			System.out.println(toArticle(body).toString());
 			body = body.substring(0,(body.length() >= 500 ? 500 : body.length()));
 			commandResponse = body;
+			
+			break;
 		}
 		case "new":{  
 			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(newsEndpoint + "news")).build();
@@ -62,6 +66,7 @@ public class CommandHandler {
 				e.printStackTrace();
 			}
 			commandResponseEmbed = toEmbed(response.body());
+			break;
 		}
 
 		case "!news":{  
@@ -73,7 +78,8 @@ public class CommandHandler {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			commandResponseEmbedList = toEmbedList(response.body());
+			commandResponseEmbedList = toEmbedArticleList(response.body());
+			break;
 		}
 
 		case "!menu":{  
@@ -86,6 +92,35 @@ public class CommandHandler {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			break;
+		}
+
+		case "lista":{  
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(newsEndpoint + "topiclist")).build();
+			HttpResponse<String> response = null;
+			try {
+				response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+			} catch (IOException | InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.err.println("BODY " + response.body());
+			topicList = toTopicList(response.body());
+			break;
+		}
+
+		case "!topic":{  
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(newsEndpoint + "topic")).
+					POST(BodyPublishers.ofString(content)).build();
+			HttpResponse<String> response = null;
+			try {
+				response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+			} catch (IOException | InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			commandResponseEmbedList = toEmbedArticleList(response.body());
+			break;
 		}
 
 
@@ -102,23 +137,35 @@ public class CommandHandler {
 		return article;
 	}
 
-	private ArrayList<EmbedCreateSpec> toEmbedList(String body) {
-		ArrayList<EmbedCreateSpec> embedList = new ArrayList<>();
+	private ArrayList<Topic> toTopicList(String body) {
+		ArrayList<Topic> topicList = new ArrayList<>();
 		StringReader sr = new StringReader(body);
 		JsonReader reader = Json.createReader(sr);
 
+		JsonArray array = reader.readArray();
+		System.err.println("ARRAY " + array.toString());
+		for(JsonValue jo : array) {
+			JsonObject obj = jo.asJsonObject();
+			topicList.add(new Topic(obj.getString("name"), obj.getString("link")));	
+		}
+		return topicList;
+	}
+
+	private ArrayList<EmbedCreateSpec> toEmbedArticleList(String body) {
+		ArrayList<EmbedCreateSpec> embedList = new ArrayList<>();
+		StringReader sr = new StringReader(body);
+		JsonReader reader = Json.createReader(sr);
+		System.err.println("BODYTOPICOOOOOO " + body);
 		JsonArray array = reader.readArray();
 
 		for(JsonValue jo : array) {
 			JsonObject obj = jo.asJsonObject();
 			Article article = new Article(obj.getString("title"), obj.getString("image"), 
 					obj.getString("content"), obj.getString("authors"), obj.getString("link"));	
-			System.err.println(article.toString());
 			EmbedCreateSpec embed = EmbedCreateSpec.builder()
 					.color(Color.BLUE)
 					.title(obj.getString("title"))
 					.url(obj.getString("link"))
-					.author(obj.getString("authors"), null, null)
 					.image(obj.getString("image"))
 					.description(obj.getString("content"))
 					.timestamp(Instant.now())
@@ -138,7 +185,6 @@ public class CommandHandler {
 				.color(Color.BLUE)
 				.title(obj.getString("title"))
 				.url(obj.getString("link"))
-				.author(obj.getString("authors"), null, null)
 				.image(obj.getString("image"))
 				.description(obj.getString("content"))
 				.timestamp(Instant.now())
@@ -157,6 +203,10 @@ public class CommandHandler {
 
 	public ArrayList<EmbedCreateSpec> getCommandResponseEmbedList() {
 		return commandResponseEmbedList;
+	}
+
+	public ArrayList<Topic> getTopicList() {
+		return topicList;
 	}
 
 
