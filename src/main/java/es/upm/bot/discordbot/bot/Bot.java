@@ -26,7 +26,7 @@ public class Bot {
 				SelectMenu.Option.of("El pais", "https://elpais.com/"),
 				SelectMenu.Option.of("El universal", "https://www.eluniversal.com/")
 				).withMaxValues(1).withMinValues(1);
-		
+
 
 
 
@@ -54,7 +54,7 @@ public class Bot {
 					}
 					return result;  	  
 				}
-				else if (message.getContent().equalsIgnoreCase("menu") || message.getContent().equalsIgnoreCase("c")) {
+				else if (message.getContent().equalsIgnoreCase("oldmenu") || message.getContent().equalsIgnoreCase("c")) {
 					return message.getChannel()
 							.flatMap(channel -> channel.createMessage(
 									MessageCreateSpec.builder()
@@ -62,17 +62,36 @@ public class Bot {
 									.addComponent(ActionRow.of(select))
 									.build()));
 				}
+				else if (message.getContent().equalsIgnoreCase("menu") || message.getContent().equalsIgnoreCase("c")) {
+					ArrayList<Topic> response = new CommandHandler(new String[]{"providers",""}).getTopicList();
+					ArrayList<SelectMenu.Option> options = new ArrayList<>();
+
+					for(Topic t : response) {
+						options.add(SelectMenu.Option.of(t.getName(),t.getLink()));
+					}
+
+					SelectMenu selectTopic = SelectMenu.of("provider", options)
+							.withMaxValues(1)
+							.withMinValues(1);
+
+					return message.getChannel()
+							.flatMap(channel -> channel.createMessage(
+									MessageCreateSpec.builder()
+									.content("Selecciona tu proveedor de noticias.")
+									.addComponent(ActionRow.of(selectTopic))
+									.build()));
+				}
 				else if (message.getContent().equalsIgnoreCase("topic") || message.getContent().equalsIgnoreCase("d")) {
 					ArrayList<Topic> response = new CommandHandler(new String[]{"lista",""}).getTopicList();
 					ArrayList<SelectMenu.Option> options = new ArrayList<>();
-					
+
 					for(Topic t : response) {
 						options.add(SelectMenu.Option.of(t.getName(),t.getLink()));
 					}
 					SelectMenu selectTopic = SelectMenu.of("topic", options)
-							  .withMaxValues(1)
-							  .withMinValues(1);
-					
+							.withMaxValues(1)
+							.withMinValues(1);
+
 					return message.getChannel()
 							.flatMap(channel -> channel.createMessage(
 									MessageCreateSpec.builder()
@@ -93,8 +112,8 @@ public class Bot {
 				else if(event.getCustomId().equals("topic")) {
 					String topic = event.getValues().toString();
 					ArrayList<EmbedCreateSpec> response = new CommandHandler(new String[]{"!topic",topic}).getCommandResponseEmbedList();
-					
-					
+
+
 					Mono<Void> result = Mono.empty();
 					for (EmbedCreateSpec messageText : response) {
 						result = result.then(event.getInteraction().getChannel()
@@ -107,11 +126,11 @@ public class Bot {
 				else return Mono.empty();
 			}).then();
 
-				return handleCommands.and(changeProvider);
+			return handleCommands.and(changeProvider);
 		});
 
 
-			login.block();
+		login.block();
 
 	}
 }

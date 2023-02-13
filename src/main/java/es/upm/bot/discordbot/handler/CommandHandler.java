@@ -107,6 +107,20 @@ public class CommandHandler {
 			topicList = toTopicList(response.body());
 			break;
 		}
+		
+		case "providers":{  
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(newsEndpoint + "providerlist")).build();
+			HttpResponse<String> response = null;
+			try {
+				response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+			} catch (IOException | InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.err.println("BODY " + response.body());
+			topicList = toProviderList(response.body());
+			break;
+		}
 
 		case "!topic":{  
 			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(newsEndpoint + "topic")).
@@ -146,6 +160,20 @@ public class CommandHandler {
 		for(JsonValue jo : array) {
 			JsonObject obj = jo.asJsonObject();
 			topicList.add(new Topic(obj.getString("name"), obj.getString("link")));	
+		}
+		return topicList;
+	}
+	
+	private ArrayList<Topic> toProviderList(String body) {
+		ArrayList<Topic> topicList = new ArrayList<>();
+		StringReader sr = new StringReader(body);
+		JsonReader reader = Json.createReader(sr);
+
+		JsonArray array = reader.readArray();
+		System.err.println("ARRAY " + array.toString());
+		for(JsonValue jo : array) {
+			JsonObject obj = jo.asJsonObject();
+			topicList.add(new Topic(obj.getString("name"), obj.getString("webSite")));	
 		}
 		return topicList;
 	}
