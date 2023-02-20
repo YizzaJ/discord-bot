@@ -39,11 +39,6 @@ public class Bot {
 					return message.getChannel()
 							.flatMap(channel -> channel.createMessage(response));
 				}
-				else if (message.getContent().equalsIgnoreCase("aaaa")) {
-					EmbedCreateSpec response = new CommandHandler(new String[]{"new",""}).getCommandResponseEmbed();
-					return message.getChannel()
-							.flatMap(channel -> channel.createMessage(response));
-				}
 				else if (message.getContent().equalsIgnoreCase("b") || message.getContent().equalsIgnoreCase("!news")) {
 					ArrayList<EmbedCreateSpec> response = new CommandHandler(new String[]{"!news",""}).getCommandResponseEmbedList();
 					Mono<Object> result = Mono.empty();
