@@ -3,7 +3,6 @@ package es.upm.bot.discordbot.bot;
 
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import org.reactivestreams.Publisher;
 
@@ -11,18 +10,12 @@ import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.ReactiveEventAdapter;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
-import discord4j.core.event.domain.interaction.ChatInputAutoCompleteEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.SelectMenuInteractionEvent;
-import discord4j.core.object.command.ApplicationCommandInteraction;
-import discord4j.core.object.command.ApplicationCommandInteractionOption;
-import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
 import discord4j.core.object.component.SelectMenu;
 import discord4j.core.object.entity.Message;
-import discord4j.core.spec.EmbedCreateSpec;
-import discord4j.core.spec.MessageCreateSpec;
 import es.upm.bot.discordbot.commands.Commands;
 import es.upm.bot.discordbot.elements.Topic;
 import es.upm.bot.discordbot.handler.CommandHandler;
@@ -60,7 +53,7 @@ public class NewBot {
 					return event.deferReply().withEphemeral(true).then(changeProviderDefered(event, userID));
 
 				case "topic":
-					return event.deferReply().withEphemeral(true).then(changeTopicDefered(event, userID));
+					return event.deferReply().withEphemeral(true).then(topicListDefered(event, userID));
 
 					//				case "provider":
 					//					String provider = event.getOption("provider")
@@ -81,7 +74,8 @@ public class NewBot {
 				String userID = event.getInteraction().getUser().getId().asString();
 				switch (event.getCustomId()) {
 				case "next-news":
-					return event.deferReply().withEphemeral(true).then(newsDeferedButton(event, userID));	
+					Button button = Button.success("next-news", "Siguientes");
+					return event.deferReply().withEphemeral(true).then(newsDeferedButton(event, userID));
 				}
 
 				return Mono.empty();
@@ -97,10 +91,7 @@ public class NewBot {
 					return event.reply("Proveedor de noticias cambiado.").withEphemeral(true);
 
 				case "topic":
-					Button button = Button.success("next-news", "Siguientes");
-					String topic = event.getValues().toString();
-					return event.reply().withEmbeds(new CommandHandler(new String[]{"!topic",topic, userID})
-							.getCommandResponseEmbedList()).withEphemeral(true).withComponents(ActionRow.of(button));
+					return event.deferReply().withEphemeral(true).then(changeTopicDefered(event, userID));
 
 //				case "topic2":
 //					String topic = event.getValues().toString();
@@ -126,14 +117,19 @@ public class NewBot {
 	}
 
 	private static Mono<Message> newsDefered(ChatInputInteractionEvent event, String userID){
-		Button button = Button.success("next-news", "Siguientes");
-		return event.createFollowup().withEmbeds(new CommandHandler(new String[]{"!news","", userID})
-				.getCommandResponseEmbedList()).withEphemeral(true).withComponents(ActionRow.of(button));
+		 return Mono.defer(() -> {
+		        Button button = Button.success("next-news", "Siguientes");
+		        return event.createFollowup()
+		                .withEmbeds(new CommandHandler(new String[]{"!news", "", userID})
+		                        .getCommandResponseEmbedList())
+		                .withEphemeral(true)
+		                .withComponents(ActionRow.of(button));
+		    });
 	}
 
 	private static Mono<Message> newsDeferedButton(ButtonInteractionEvent event, String userID){
 		Button button = Button.success("next-news", "Siguientes");
-		return event.createFollowup().withEmbeds(new CommandHandler(new String[]{"!news","", userID})
+		return event.createFollowup().withEmbeds(new CommandHandler(new String[]{"!nextNews","", userID})
 				.getCommandResponseEmbedList()).withEphemeral(true).withComponents(ActionRow.of(button));
 	}
 
@@ -152,18 +148,30 @@ public class NewBot {
 		return event.createFollowup().withEphemeral(true).withComponents(ActionRow.of(selectProvider));
 	}
 
-	private static Mono<Message> changeTopicDefered(ChatInputInteractionEvent event, String userID){
-		ArrayList<Topic> response = new CommandHandler(new String[]{"lista","", userID}).getTopicList();
-		ArrayList<SelectMenu.Option> options = new ArrayList<>();
+	private static Mono<Message> topicListDefered(ChatInputInteractionEvent event, String userID){
+		 return Mono.defer(() -> {
+				ArrayList<Topic> response = new CommandHandler(new String[]{"lista","", userID}).getTopicList();
+				ArrayList<SelectMenu.Option> options = new ArrayList<>();
 
-		for(Topic t : response) {
-			options.add(SelectMenu.Option.of(t.getName(),t.getLink()));
-		}
-		SelectMenu selectTopic = SelectMenu.of("topic", options)
-				.withMaxValues(1)
-				.withMinValues(1);
+				for(Topic t : response) {
+					options.add(SelectMenu.Option.of(t.getName(),t.getLink()));
+				}
+				SelectMenu selectTopic = SelectMenu.of("topic", options)
+						.withMaxValues(1)
+						.withMinValues(1);
 
-		return event.createFollowup().withEphemeral(true).withComponents(ActionRow.of(selectTopic));
+				return event.createFollowup().withEphemeral(true).withComponents(ActionRow.of(selectTopic));
+		    });
+	}
+	private static Mono<Message> changeTopicDefered(SelectMenuInteractionEvent event, String userID){
+		 return Mono.defer(() -> {
+			 
+			 Button button = Button.success("next-news", "Siguientes");
+				String topic = event.getValues().toString();
+				return event.createFollowup().withEmbeds(new CommandHandler(new String[]{"!topic",topic, userID})
+						.getCommandResponseEmbedList()).withEphemeral(true).withComponents(ActionRow.of(button));
+				
+		    });
 	}
 
 

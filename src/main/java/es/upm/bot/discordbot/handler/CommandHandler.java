@@ -82,6 +82,20 @@ public class CommandHandler {
 			commandResponseEmbedList = toEmbedArticleList(response.body());
 			break;
 		}
+		
+		case "!nextNews":{  
+			System.err.println("MANDO GET POR: " +  API + "nextnews");
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "nextnews")).build();
+			HttpResponse<String> response = null;
+			try {
+				response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+			} catch (IOException | InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			commandResponseEmbedList = toEmbedArticleList(response.body());
+			break;
+		}
 
 		case "!menu":{  
 			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "change")).

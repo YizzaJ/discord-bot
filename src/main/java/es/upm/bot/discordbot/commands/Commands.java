@@ -5,10 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import discord4j.core.GatewayDiscordClient;
-import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.discordjson.json.ApplicationCommandData;
 import discord4j.discordjson.json.ApplicationCommandOptionChoiceData;
-import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import es.upm.bot.discordbot.elements.Topic;
 import es.upm.bot.discordbot.handler.CommandHandler;
