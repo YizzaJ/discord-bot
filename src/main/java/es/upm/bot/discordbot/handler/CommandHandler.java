@@ -34,11 +34,12 @@ public class CommandHandler {
 		HttpClient httpClient = HttpClient.newHttpClient();	 
 		String command = message[0];
 		String content = message[1];
+		String user = message[2];
 
-
+		String API = newsEndpoint + ""+ user + "/";
 		switch(command) {
 		case "news":{  
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(newsEndpoint + "news")).build();
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "news")).build();
 			HttpResponse<String> response = null;
 			try {
 				response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -56,7 +57,7 @@ public class CommandHandler {
 			break;
 		}
 		case "new":{  
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(newsEndpoint + "news")).build();
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "news")).build();
 			HttpResponse<String> response = null;
 			try {
 				response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -69,7 +70,8 @@ public class CommandHandler {
 		}
 
 		case "!news":{  
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(newsEndpoint + "newslist")).build();
+			System.err.println("MANDO GET POR: " +  API + "newslist");
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "newslist")).build();
 			HttpResponse<String> response = null;
 			try {
 				response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -82,7 +84,7 @@ public class CommandHandler {
 		}
 
 		case "!menu":{  
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(newsEndpoint + "change")).
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "change")).
 					POST(BodyPublishers.ofString(content)).build();
 			HttpResponse<String> response = null;
 			try {
@@ -95,7 +97,7 @@ public class CommandHandler {
 		}
 
 		case "lista":{  
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(newsEndpoint + "topiclist")).build();
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "topiclist")).build();
 			HttpResponse<String> response = null;
 			try {
 				response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -109,7 +111,7 @@ public class CommandHandler {
 		}
 		
 		case "providers":{  
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(newsEndpoint + "providerlist")).build();
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "providerlist")).build();
 			HttpResponse<String> response = null;
 			try {
 				response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -123,7 +125,7 @@ public class CommandHandler {
 		}
 
 		case "!topic":{  
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(newsEndpoint + "topic")).
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "topic")).
 					POST(BodyPublishers.ofString(content)).build();
 			HttpResponse<String> response = null;
 			try {

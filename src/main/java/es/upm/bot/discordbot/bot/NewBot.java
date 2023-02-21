@@ -50,16 +50,17 @@ public class NewBot {
 
 			@Override
 			public Publisher<?> onChatInputInteraction(ChatInputInteractionEvent event) {
-
+				String userID = event.getInteraction().getUser().getId().asString();
+				System.err.println( event.getInteraction().getUser().getId().asString());
 				switch (event.getCommandName()) {
 				case "news":
-					return event.deferReply().withEphemeral(true).then(newsDefered(event));
+					return event.deferReply().withEphemeral(true).then(newsDefered(event, userID));
 
 				case "change":
-					return event.deferReply().withEphemeral(true).then(changeProviderDefered(event));
+					return event.deferReply().withEphemeral(true).then(changeProviderDefered(event, userID));
 
 				case "topic":
-					return event.deferReply().withEphemeral(true).then(changeTopicDefered(event));
+					return event.deferReply().withEphemeral(true).then(changeTopicDefered(event, userID));
 
 					//				case "provider":
 					//					String provider = event.getOption("provider")
@@ -77,9 +78,10 @@ public class NewBot {
 
 			@Override
 			public Publisher<?> onButtonInteraction(ButtonInteractionEvent event) {
+				String userID = event.getInteraction().getUser().getId().asString();
 				switch (event.getCustomId()) {
 				case "next-news":
-					return event.deferReply().withEphemeral(true).then(newsDeferedButton(event));	
+					return event.deferReply().withEphemeral(true).then(newsDeferedButton(event, userID));	
 				}
 
 				return Mono.empty();
@@ -87,17 +89,17 @@ public class NewBot {
 
 			@Override
 			public Publisher<?> onSelectMenuInteraction(SelectMenuInteractionEvent event) {
-
+				String userID = event.getInteraction().getUser().getId().asString();
 				switch (event.getCustomId()) {
 				case "provider":
 					String provider = event.getValues().toString();
-					new CommandHandler(new String[]{"!menu",provider}).getCommandResponse();
-					return event.reply("Proveedor de noticias cambiado.");
+					new CommandHandler(new String[]{"!menu",provider, userID}).getCommandResponse();
+					return event.reply("Proveedor de noticias cambiado.").withEphemeral(true);
 
 				case "topic":
 					Button button = Button.success("next-news", "Siguientes");
 					String topic = event.getValues().toString();
-					return event.reply().withEmbeds(new CommandHandler(new String[]{"!topic",topic})
+					return event.reply().withEmbeds(new CommandHandler(new String[]{"!topic",topic, userID})
 							.getCommandResponseEmbedList()).withEphemeral(true).withComponents(ActionRow.of(button));
 
 //				case "topic2":
@@ -123,20 +125,20 @@ public class NewBot {
 		commands.delete();
 	}
 
-	private static Mono<Message> newsDefered(ChatInputInteractionEvent event){
+	private static Mono<Message> newsDefered(ChatInputInteractionEvent event, String userID){
 		Button button = Button.success("next-news", "Siguientes");
-		return event.createFollowup().withEmbeds(new CommandHandler(new String[]{"!news",""})
+		return event.createFollowup().withEmbeds(new CommandHandler(new String[]{"!news","", userID})
 				.getCommandResponseEmbedList()).withEphemeral(true).withComponents(ActionRow.of(button));
 	}
 
-	private static Mono<Message> newsDeferedButton(ButtonInteractionEvent event){
+	private static Mono<Message> newsDeferedButton(ButtonInteractionEvent event, String userID){
 		Button button = Button.success("next-news", "Siguientes");
-		return event.createFollowup().withEmbeds(new CommandHandler(new String[]{"!news",""})
+		return event.createFollowup().withEmbeds(new CommandHandler(new String[]{"!news","", userID})
 				.getCommandResponseEmbedList()).withEphemeral(true).withComponents(ActionRow.of(button));
 	}
 
-	private static Mono<Message> changeProviderDefered(ChatInputInteractionEvent event){
-		ArrayList<Topic> response = new CommandHandler(new String[]{"providers",""}).getTopicList();
+	private static Mono<Message> changeProviderDefered(ChatInputInteractionEvent event, String userID){
+		ArrayList<Topic> response = new CommandHandler(new String[]{"providers","", userID}).getTopicList();
 		ArrayList<SelectMenu.Option> options = new ArrayList<>();
 
 		for(Topic t : response) {
@@ -150,8 +152,8 @@ public class NewBot {
 		return event.createFollowup().withEphemeral(true).withComponents(ActionRow.of(selectProvider));
 	}
 
-	private static Mono<Message> changeTopicDefered(ChatInputInteractionEvent event){
-		ArrayList<Topic> response = new CommandHandler(new String[]{"lista",""}).getTopicList();
+	private static Mono<Message> changeTopicDefered(ChatInputInteractionEvent event, String userID){
+		ArrayList<Topic> response = new CommandHandler(new String[]{"lista","", userID}).getTopicList();
 		ArrayList<SelectMenu.Option> options = new ArrayList<>();
 
 		for(Topic t : response) {
