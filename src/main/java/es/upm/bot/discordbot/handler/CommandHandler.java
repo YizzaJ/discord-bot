@@ -141,7 +141,6 @@ public class CommandHandler {
 		ArrayList<EmbedCreateSpec> embedList = new ArrayList<>();
 		StringReader sr = new StringReader(body);
 		JsonReader reader = Json.createReader(sr);
-		System.err.println("BODYTOPICOOOOOO " + body);
 		JsonArray array = reader.readArray();
 
 		for(JsonValue jo : array) {
