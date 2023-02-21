@@ -1,15 +1,10 @@
 package es.upm.bot.discordbot.commands;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import discord4j.core.GatewayDiscordClient;
 import discord4j.discordjson.json.ApplicationCommandData;
-import discord4j.discordjson.json.ApplicationCommandOptionChoiceData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
-import es.upm.bot.discordbot.elements.Topic;
-import es.upm.bot.discordbot.handler.CommandHandler;
 
 public class Commands {
 
@@ -54,31 +49,6 @@ public class Commands {
 		client.getRestClient().getApplicationService()
 		.createGuildApplicationCommand(applicationId, guildId, topic)
 		.subscribe();
-
-//		ApplicationCommandRequest changeProvider = ApplicationCommandRequest.builder()
-//				.name("provider")
-//				.description("Cambia el proveedor de noticias.")
-//				.addOption(ApplicationCommandOptionData.builder()
-//						.name("provider")
-//						.description("Proveedor de noticias al que quieres cambiar.")
-//						.type(ApplicationCommandOption.Type.STRING.getValue())
-//						.addAllChoices(loadProviders())
-//						.required(true)
-//						.build()
-//						).build();
-//
-//		client.getRestClient().getApplicationService()
-//		.createGuildApplicationCommand(applicationId, guildId, changeProvider)
-//		.subscribe();
-	}
-
-	public List<ApplicationCommandOptionChoiceData> loadProviders(){
-		List<ApplicationCommandOptionChoiceData> providers = new ArrayList<>();
-		ArrayList<Topic> response = new CommandHandler(new String[]{"providers",""}).getTopicList();
-
-		for(Topic t : response)
-			providers.add(ApplicationCommandOptionChoiceData.builder().name(t.getName()).value(t.getLink()).build());
-		return providers;
 	}
 
 	public void delete() {

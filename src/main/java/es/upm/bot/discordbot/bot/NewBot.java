@@ -26,17 +26,20 @@ public class NewBot {
 	private static final String token = "MTA1OTgyNDAwNTk1MzA5NzczOA.GUL_xT.eqwfcC42PhzrB1KDyf9cNGzT3FWp1EtVeTSqGg";
 	private static final long guildId = 1059854853721030719L;
 
+	private static CommandHandler handler = new CommandHandler();
+	
 	public static void main(String[] args) {
 		GatewayDiscordClient client = DiscordClient.create(token)
 				.login()
 				.block();
 
-		// Get our application's ID
+
 		long applicationId = client.getRestClient().getApplicationId().block();
 
 		Commands commands = new Commands(client, applicationId, guildId);
 		commands.create();
-		//						commands.delete();
+
+		
 
 		client.on(new ReactiveEventAdapter() {
 
@@ -78,7 +81,7 @@ public class NewBot {
 				switch (event.getCustomId()) {
 				case "provider":
 					String provider = event.getValues().toString();
-					new CommandHandler(new String[]{"!menu",provider, userID}).getCommandResponse();
+					handler.changeProvider(userID, provider);
 					return event.reply("Proveedor de noticias cambiado.").withEphemeral(true);
 
 				case "topic":
@@ -89,16 +92,13 @@ public class NewBot {
 			}
 
 		}).blockLast();
-		System.err.println("CERRAMOS BOT");
-		commands.delete();
 	}
 
 	private static Mono<Message> newsDefered(ChatInputInteractionEvent event, String userID){
 		 return Mono.defer(() -> {
 		        Button button = Button.success("next-news", "Siguientes");
 		        return event.createFollowup()
-		                .withEmbeds(new CommandHandler(new String[]{"!news", "", userID})
-		                        .getCommandResponseEmbedList())
+		                .withEmbeds(handler.getNewsList(userID))
 		                .withEphemeral(true)
 		                .withComponents(ActionRow.of(button));
 		    });
@@ -106,12 +106,12 @@ public class NewBot {
 
 	private static Mono<Message> newsDeferedButton(ButtonInteractionEvent event, String userID){
 		Button button = Button.success("next-news", "Siguientes");
-		return event.createFollowup().withEmbeds(new CommandHandler(new String[]{"!nextNews","", userID})
-				.getCommandResponseEmbedList()).withEphemeral(true).withComponents(ActionRow.of(button));
+		return event.createFollowup().withEmbeds(handler.nextNews(userID))
+				.withEphemeral(true).withComponents(ActionRow.of(button));
 	}
 
 	private static Mono<Message> changeProviderDefered(ChatInputInteractionEvent event, String userID){
-		ArrayList<Topic> response = new CommandHandler(new String[]{"providers","", userID}).getTopicList();
+		ArrayList<Topic> response = handler.getProviderList(userID);
 		ArrayList<SelectMenu.Option> options = new ArrayList<>();
 
 		for(Topic t : response) {
@@ -127,7 +127,7 @@ public class NewBot {
 
 	private static Mono<Message> topicListDefered(ChatInputInteractionEvent event, String userID){
 		 return Mono.defer(() -> {
-				ArrayList<Topic> response = new CommandHandler(new String[]{"lista","", userID}).getTopicList();
+				ArrayList<Topic> response = handler.getTopicList(userID);
 				ArrayList<SelectMenu.Option> options = new ArrayList<>();
 
 				for(Topic t : response) {
@@ -145,8 +145,8 @@ public class NewBot {
 			 
 			 Button button = Button.success("next-news", "Siguientes");
 				String topic = event.getValues().toString();
-				return event.createFollowup().withEmbeds(new CommandHandler(new String[]{"!topic",topic, userID})
-						.getCommandResponseEmbedList()).withEphemeral(true).withComponents(ActionRow.of(button));
+				return event.createFollowup().withEmbeds(handler.changeTopic(userID, topic))
+						.withEphemeral(true).withComponents(ActionRow.of(button));
 				
 		    });
 	}

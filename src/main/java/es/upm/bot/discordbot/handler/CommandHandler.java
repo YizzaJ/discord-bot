@@ -18,152 +18,96 @@ import javax.json.JsonValue;
 
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.util.Color;
-import es.upm.bot.discordbot.elements.Article;
 import es.upm.bot.discordbot.elements.Topic;
 
 public class CommandHandler {
 
 	private static final String newsEndpoint = "http://localhost:9999/";
-	private ArrayList<EmbedCreateSpec> commandResponseEmbedList;
-	private ArrayList<Topic> topicList;
-	private String commandResponse;
-	private EmbedCreateSpec commandResponseEmbed;
 
-	public CommandHandler(String[] message){	
+	private HttpClient httpClient;
+	public CommandHandler(){
+		httpClient = HttpClient.newHttpClient();
+	}
 
-		HttpClient httpClient = HttpClient.newHttpClient();	 
-		String command = message[0];
-		String content = message[1];
-		String user = message[2];
-
+	public ArrayList<EmbedCreateSpec> getNewsList(String user){ 
 		String API = newsEndpoint + ""+ user + "/";
-		switch(command) {
-		case "news":{  
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "news")).build();
-			HttpResponse<String> response = null;
-			try {
-				response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-			} catch (IOException | InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			String body = response.body();
-			System.out.println(body);
-			System.out.println();
-			System.out.println(toArticle(body).toString());
-			body = body.substring(0,(body.length() >= 500 ? 500 : body.length()));
-			commandResponse = body;
-			
-			break;
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "news-list")).build();
+		HttpResponse<String> response = null;
+		try {
+			response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+		} catch (IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		case "new":{  
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "news")).build();
-			HttpResponse<String> response = null;
-			try {
-				response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-			} catch (IOException | InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			commandResponseEmbed = toEmbed(response.body());
-			break;
-		}
-
-		case "!news":{  
-			System.err.println("MANDO GET POR: " +  API + "newslist");
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "newslist")).build();
-			HttpResponse<String> response = null;
-			try {
-				response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-			} catch (IOException | InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			commandResponseEmbedList = toEmbedArticleList(response.body());
-			break;
-		}
-		
-		case "!nextNews":{  
-			System.err.println("MANDO GET POR: " +  API + "nextnews");
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "nextnews")).build();
-			HttpResponse<String> response = null;
-			try {
-				response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-			} catch (IOException | InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			commandResponseEmbedList = toEmbedArticleList(response.body());
-			break;
-		}
-
-		case "!menu":{  
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "change")).
-					POST(BodyPublishers.ofString(content)).build();
-			try {
-				httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-			} catch (IOException | InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-		}
-
-		case "lista":{  
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "topiclist")).build();
-			HttpResponse<String> response = null;
-			try {
-				response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-			} catch (IOException | InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			System.err.println("BODY " + response.body());
-			topicList = toTopicList(response.body());
-			break;
-		}
-		
-		case "providers":{  
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "providerlist")).build();
-			HttpResponse<String> response = null;
-			try {
-				response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-			} catch (IOException | InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			System.err.println("BODY " + response.body());
-			topicList = toProviderList(response.body());
-			break;
-		}
-
-		case "!topic":{  
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "topic")).
-					POST(BodyPublishers.ofString(content)).build();
-			HttpResponse<String> response = null;
-			try {
-				response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-			} catch (IOException | InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			commandResponseEmbedList = toEmbedArticleList(response.body());
-			break;
-		}
-
-
-		}
-
+		return toEmbedArticleList(response.body());
 	}
 
-	private Article toArticle(String body) {
-		StringReader sr = new StringReader(body);
-		JsonReader reader = Json.createReader(sr);
-		JsonObject obj = reader.readObject();
-		Article article = new Article(obj.getString("title"), obj.getString("image"), 
-				obj.getString("content"), obj.getString("authors"), obj.getString("link"));		
-		return article;
+	public ArrayList<Topic> getProviderList(String user){ 
+		String API = newsEndpoint + ""+ user + "/";
+
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "provider-list")).build();
+		HttpResponse<String> response = null;
+		try {
+			response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+		} catch (IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		return toProviderList(response.body());
 	}
+
+	public ArrayList<Topic> getTopicList(String user){  
+		String API = newsEndpoint + ""+ user + "/";
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "topic-list")).build();
+		HttpResponse<String> response = null;
+		try {
+			response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+		} catch (IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return toTopicList(response.body());
+
+	}
+	public ArrayList<EmbedCreateSpec> changeTopic(String user, String topic){  
+		String API = newsEndpoint + ""+ user + "/";
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "change-topic")).
+				POST(BodyPublishers.ofString(topic)).build();
+		HttpResponse<String> response = null;
+		try {
+			response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+		} catch (IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return toEmbedArticleList(response.body());
+	}
+
+	public void changeProvider(String user, String provider){ 
+		String API = newsEndpoint + ""+ user + "/";
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "change-provider")).
+				POST(BodyPublishers.ofString(provider)).build();
+		try {
+			httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+		} catch (IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public ArrayList<EmbedCreateSpec> nextNews(String user){ 
+		String API = newsEndpoint + ""+ user + "/";
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "next-news")).build();
+		HttpResponse<String> response = null;
+		try {
+			response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+		} catch (IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return toEmbedArticleList(response.body());
+	}
+
 
 	private ArrayList<Topic> toTopicList(String body) {
 		ArrayList<Topic> topicList = new ArrayList<>();
@@ -178,7 +122,7 @@ public class CommandHandler {
 		}
 		return topicList;
 	}
-	
+
 	private ArrayList<Topic> toProviderList(String body) {
 		ArrayList<Topic> topicList = new ArrayList<>();
 		StringReader sr = new StringReader(body);
@@ -215,39 +159,8 @@ public class CommandHandler {
 		}
 
 		return embedList;
+	
+
+
 	}
-
-	private EmbedCreateSpec toEmbed(String body) {
-		StringReader sr = new StringReader(body);
-		JsonReader reader = Json.createReader(sr);
-		JsonObject obj = reader.readObject();
-		EmbedCreateSpec embed = EmbedCreateSpec.builder()
-				.color(Color.BLUE)
-				.title(obj.getString("title"))
-				.url(obj.getString("link"))
-				.image(obj.getString("image"))
-				.description(obj.getString("content"))
-				.timestamp(Instant.now())
-				.footer("NotiBot", obj.getString("favicon"))
-				.build();	
-		return embed;
-	}
-
-	public String getCommandResponse() {
-		return commandResponse;
-	}
-
-	public EmbedCreateSpec getCommandResponseEmbed() {
-		return commandResponseEmbed;
-	}
-
-	public ArrayList<EmbedCreateSpec> getCommandResponseEmbedList() {
-		return commandResponseEmbedList;
-	}
-
-	public ArrayList<Topic> getTopicList() {
-		return topicList;
-	}
-
-
 }
