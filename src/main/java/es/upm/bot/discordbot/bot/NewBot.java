@@ -55,14 +55,6 @@ public class NewBot {
 				case "topic":
 					return event.deferReply().withEphemeral(true).then(topicListDefered(event, userID));
 
-					//				case "provider":
-					//					String provider = event.getOption("provider")
-					//					.flatMap(ApplicationCommandInteractionOption::getValue)
-					//					.map(ApplicationCommandInteractionOptionValue::asString)
-					//					.get(); 
-					//					System.err.println("CAMBIAMOS A " + provider);
-					//					new CommandHandler(new String[]{"!menu",provider}).getCommandResponse();
-					//					return event.reply("Proveedor de noticias cambiado.").withEphemeral(true);
 				}
 
 				return Mono.empty();
@@ -74,7 +66,6 @@ public class NewBot {
 				String userID = event.getInteraction().getUser().getId().asString();
 				switch (event.getCustomId()) {
 				case "next-news":
-					Button button = Button.success("next-news", "Siguientes");
 					return event.deferReply().withEphemeral(true).then(newsDeferedButton(event, userID));
 				}
 
@@ -92,20 +83,6 @@ public class NewBot {
 
 				case "topic":
 					return event.deferReply().withEphemeral(true).then(changeTopicDefered(event, userID));
-
-//				case "topic2":
-//					String topic = event.getValues().toString();
-//					ArrayList<EmbedCreateSpec> response = new CommandHandler(new String[]{"!topic",topic}).getCommandResponseEmbedList();
-//
-//
-//					Mono<Void> result = Mono.empty();
-//					for (EmbedCreateSpec messageText : response) {
-//						result = result.then(event.getInteraction().getChannel()
-//								.flatMap(channel -> channel.createMessage(messageText))
-//								.flatMap(x -> x.getChannel()))
-//								.then();
-//					}
-//					return result;
 				}
 				return Mono.empty();
 

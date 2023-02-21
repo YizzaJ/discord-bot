@@ -100,9 +100,8 @@ public class CommandHandler {
 		case "!menu":{  
 			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "change")).
 					POST(BodyPublishers.ofString(content)).build();
-			HttpResponse<String> response = null;
 			try {
-				response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+				httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 			} catch (IOException | InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -203,8 +202,6 @@ public class CommandHandler {
 
 		for(JsonValue jo : array) {
 			JsonObject obj = jo.asJsonObject();
-			Article article = new Article(obj.getString("title"), obj.getString("image"), 
-					obj.getString("content"), obj.getString("authors"), obj.getString("link"));	
 			EmbedCreateSpec embed = EmbedCreateSpec.builder()
 					.color(Color.BLUE)
 					.title(obj.getString("title"))
