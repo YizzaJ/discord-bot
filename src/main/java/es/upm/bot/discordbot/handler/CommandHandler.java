@@ -28,9 +28,21 @@ public class CommandHandler {
 	public CommandHandler(){
 		httpClient = HttpClient.newHttpClient();
 	}
+	
+	public void createBot(Long serverID, String name){ 
+		String API = newsEndpoint + "create/";
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API)).
+				POST(BodyPublishers.ofString("[" + serverID.toString() + "," + name + "]")).build();
+		try {
+			httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+		} catch (IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
-	public ArrayList<EmbedCreateSpec> getNewsList(String user){ 
-		String API = newsEndpoint + ""+ user + "/";
+	public ArrayList<EmbedCreateSpec> getNewsList(String user, Long serverID){ 
+		String API = newsEndpoint + ""+ serverID+ "/" + user + "/";
 		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "news-list")).build();
 		HttpResponse<String> response = null;
 		try {
@@ -42,8 +54,8 @@ public class CommandHandler {
 		return toEmbedArticleList(response.body());
 	}
 
-	public ArrayList<Topic> getProviderList(String user){ 
-		String API = newsEndpoint + ""+ user + "/";
+	public ArrayList<Topic> getProviderList(String user, Long serverID){ 
+		String API = newsEndpoint + ""+ serverID+ "/" + user + "/";
 
 		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "provider-list")).build();
 		HttpResponse<String> response = null;
@@ -56,8 +68,8 @@ public class CommandHandler {
 		return toProviderList(response.body());
 	}
 
-	public ArrayList<Topic> getTopicList(String user){  
-		String API = newsEndpoint + ""+ user + "/";
+	public ArrayList<Topic> getTopicList(String user, Long serverID){  
+		String API = newsEndpoint + ""+ serverID+ "/" + user + "/";
 		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "topic-list")).build();
 		HttpResponse<String> response = null;
 		try {
@@ -69,8 +81,8 @@ public class CommandHandler {
 		return toTopicList(response.body());
 
 	}
-	public ArrayList<EmbedCreateSpec> changeTopic(String user, String topic){  
-		String API = newsEndpoint + ""+ user + "/";
+	public ArrayList<EmbedCreateSpec> changeTopic(String user, Long serverID, String topic){  
+		String API = newsEndpoint + ""+ serverID+ "/" + user + "/";
 		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "change-topic")).
 				POST(BodyPublishers.ofString(topic)).build();
 		HttpResponse<String> response = null;
@@ -83,8 +95,8 @@ public class CommandHandler {
 		return toEmbedArticleList(response.body());
 	}
 
-	public void changeProvider(String user, String provider){ 
-		String API = newsEndpoint + ""+ user + "/";
+	public void changeProvider(String user, Long serverID, String provider){ 
+		String API = newsEndpoint + ""+ serverID+ "/" + user + "/";
 		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "change-provider")).
 				POST(BodyPublishers.ofString(provider)).build();
 		try {
@@ -95,8 +107,8 @@ public class CommandHandler {
 		}
 	}
 
-	public ArrayList<EmbedCreateSpec> nextNews(String user){ 
-		String API = newsEndpoint + ""+ user + "/";
+	public ArrayList<EmbedCreateSpec> nextNews(String user, Long serverID){ 
+		String API = newsEndpoint + ""+ serverID+ "/" + user + "/";
 		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API + "next-news")).build();
 		HttpResponse<String> response = null;
 		try {
