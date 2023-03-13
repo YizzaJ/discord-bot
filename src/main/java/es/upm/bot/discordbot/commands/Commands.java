@@ -24,7 +24,7 @@ public class Commands {
 		delete(); //TODO ELIMINAR AL ESTAR EN DESPLIEGUE
 
 		ApplicationCommandRequest showNews = ApplicationCommandRequest.builder()
-				.name("news")
+				.name("noticias")
 				.description("Muestra las noticias en el maximo especificado.")
 				.build();
 
@@ -33,7 +33,7 @@ public class Commands {
 		.subscribe();
 
 		ApplicationCommandRequest change = ApplicationCommandRequest.builder()
-				.name("change")
+				.name("proveedor")
 				.description("Cambia el proveedor de noticias.")
 				.build();
 
@@ -42,7 +42,7 @@ public class Commands {
 		.subscribe();
 		
 		ApplicationCommandRequest topic = ApplicationCommandRequest.builder()
-				.name("topic")
+				.name("categorias")
 				.description("Cambia la categoria de las noticias.")
 				.build();
 

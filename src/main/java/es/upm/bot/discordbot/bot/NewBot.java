@@ -56,13 +56,13 @@ public class NewBot {
 				Long serverID = event.getInteraction().getGuildId().get().asLong();
 				System.err.println( event.getInteraction().getUser().getId().asString());
 				switch (event.getCommandName()) {
-				case "news":
+				case "noticias":
 					return event.deferReply().withEphemeral(true).then(newsDefered(event, userID, serverID));
 
-				case "change":
+				case "proveedor":
 					return event.deferReply().withEphemeral(true).then(changeProviderDefered(event, userID, serverID));
 
-				case "topic":
+				case "categorias":
 					return event.deferReply().withEphemeral(true).then(topicListDefered(event, userID, serverID));
 
 				}
