@@ -30,7 +30,7 @@ public class CommandHandler {
 	}
 	
 	public void createBot(Long serverID, String name){ 
-		String API = newsEndpoint + "guilds/";
+		String API = newsEndpoint + "guilds/" + serverID + "/";
 		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API)).
 				POST(BodyPublishers.ofString("[" + name + "]")).build();
 		try {
