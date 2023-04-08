@@ -48,34 +48,7 @@ public class Commands {
 		.createGlobalApplicationCommand(applicationId, topic)
 		.subscribe();
 
-		delete(); //TODO ELIMINAR AL ESTAR EN DESPLIEGUE
-//
-//		ApplicationCommandRequest showNews = ApplicationCommandRequest.builder()
-//				.name("noticias")
-//				.description("Muestra las noticias en el maximo especificado.")
-//				.build();
-//
-//		client.getRestClient().getApplicationService()
-//		.createGuildApplicationCommand(applicationId, guildId, showNews)
-//		.subscribe();
-//
-//		ApplicationCommandRequest change = ApplicationCommandRequest.builder()
-//				.name("proveedor")
-//				.description("Cambia el proveedor de noticias.")
-//				.build();
-//
-//		client.getRestClient().getApplicationService()
-//		.createGuildApplicationCommand(applicationId, guildId, change)
-//		.subscribe();
-//		
-//		ApplicationCommandRequest topic = ApplicationCommandRequest.builder()
-//				.name("categorias")
-//				.description("Cambia la categoria de las noticias.")
-//				.build();
-//
-//		client.getRestClient().getApplicationService()
-//		.createGuildApplicationCommand(applicationId, guildId, topic)
-//		.subscribe();
+
 	}
 
 	public void delete() {

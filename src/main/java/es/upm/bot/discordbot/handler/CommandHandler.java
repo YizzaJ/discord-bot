@@ -36,7 +36,7 @@ public class CommandHandler {
 		try {
 			httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 	}
@@ -49,7 +49,7 @@ public class CommandHandler {
 		try {
 			response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return toEmbedArticleList(response.body());
@@ -63,7 +63,7 @@ public class CommandHandler {
 		try {
 			response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}		
 		return toProviderList(response.body());
@@ -76,7 +76,7 @@ public class CommandHandler {
 		try {
 			response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return toTopicList(response.body());
@@ -90,7 +90,7 @@ public class CommandHandler {
 		try {
 			response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return toEmbedArticleList(response.body());
@@ -103,7 +103,7 @@ public class CommandHandler {
 		try {
 			httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 	}
@@ -115,7 +115,7 @@ public class CommandHandler {
 		try {
 			response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return toEmbedArticleList(response.body());
