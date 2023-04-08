@@ -54,7 +54,6 @@ public class Bot {
 			public Publisher<?> onChatInputInteraction(ChatInputInteractionEvent event) {
 				String userID = event.getInteraction().getUser().getId().asString();
 				Long serverID = event.getInteraction().getGuildId().get().asLong();
-				System.err.println( event.getInteraction().getUser().getId().asString());
 				switch (event.getCommandName()) {
 				case "noticias":
 					return event.deferReply().withEphemeral(true).then(newsDefered(event, userID, serverID));

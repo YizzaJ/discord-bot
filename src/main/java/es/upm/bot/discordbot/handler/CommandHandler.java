@@ -128,7 +128,6 @@ public class CommandHandler {
 		JsonReader reader = Json.createReader(sr);
 
 		JsonArray array = reader.readArray();
-		System.err.println("ARRAY " + array.toString());
 		for(JsonValue jo : array) {
 			JsonObject obj = jo.asJsonObject();
 			topicList.add(new Topic(obj.getString("name"), obj.getString("link")));	
@@ -142,7 +141,6 @@ public class CommandHandler {
 		JsonReader reader = Json.createReader(sr);
 
 		JsonArray array = reader.readArray();
-		System.err.println("ARRAY " + array.toString());
 		for(JsonValue jo : array) {
 			JsonObject obj = jo.asJsonObject();
 			topicList.add(new Topic(obj.getString("name"), obj.getString("webSite")));	
