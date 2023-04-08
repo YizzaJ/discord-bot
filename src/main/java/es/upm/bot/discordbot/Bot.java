@@ -1,4 +1,4 @@
-package es.upm.bot.discordbot.bot;
+package es.upm.bot.discordbot;
 
 
 
@@ -22,7 +22,7 @@ import es.upm.bot.discordbot.elements.Topic;
 import es.upm.bot.discordbot.handler.CommandHandler;
 import reactor.core.publisher.Mono;
 
-public class NewBot {
+public class Bot {
 
 	private static final String token = "MTA1OTgyNDAwNTk1MzA5NzczOA.GUL_xT.eqwfcC42PhzrB1KDyf9cNGzT3FWp1EtVeTSqGg";
 	private static final long guildId = 1059854853721030719L;
